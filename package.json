@@ -1,0 +1,35 @@
+{
+  "name": "@ruco-dev/xtage",
+  "version": "0.6.0",
+  "description": "Local MCP server giving Claude persistent, semantic knowledge of a codebase",
+  "homepage": "https://xtage.ruco.dev",
+  "license": "MIT",
+  "author": "ruco-ai",
+  "type": "module",
+  "main": "./dist/server.js",
+  "bin": {
+    "xtage": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "start": "node dist/server.js",
+    "sync-templates": "npx mdblu sync ./templates --templates CODEINDEX.md,REPO.md,PROJECTINSIGHTS.md,GENERALINSIGHTS.md"
+  },
+  "dependencies": {
+    "@anthropic-ai/tokenizer": "^0.0.4",
+    "@ruco-ai/mcpster": "^0.2.5",
+    "adm-zip": "^0.5.16",
+    "ignore": "^6.0.2",
+    "minimatch": "^10.0.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}

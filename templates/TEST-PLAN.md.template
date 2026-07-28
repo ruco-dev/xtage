@@ -1,0 +1,41 @@
+# TEST-PLAN: {{feature}}
+
+## Scope
+
+{{what is being tested and why}}
+
+## Prerequisites
+
+- [ ] {{environment or setup requirement}}
+
+## Test Cases
+
+### TC-01: {{happy path}}
+
+**Assignee:** -
+**Setup:** {{initial state}}
+**Steps:**
+1. {{step}}
+**Expected:** {{outcome}}
+**Pass criteria:** {{what makes this a pass}}
+
+---
+
+### TC-02: {{edge case}}
+
+**Assignee:** -
+**Setup:** {{initial state}}
+**Steps:**
+1. {{step}}
+**Expected:** {{outcome}}
+**Pass criteria:** {{what makes this a pass}}
+
+---
+
+## Regression Checks
+
+- [ ] {{existing feature that must still work}}
+
+## Known Gaps
+
+- {{what is not covered and why}}

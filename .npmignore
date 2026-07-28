@@ -1,0 +1,9 @@
+src/
+history/
+tsconfig.json
+*.tgz
+.gitignore
+TODO.md
+.claude
+.flowdeck/
+
