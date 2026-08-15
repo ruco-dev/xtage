@@ -18,3 +18,6 @@ xtage gives Claude persistent, semantic knowledge of a codebase — across every
 - No xtage index exists for the xtage repo itself yet — run `xtage init` to bootstrap; gate currently fails-open everywhere
 - git post-commit hook spawns a Claude session on every commit (including in this repo) — needs a guard when no index exists
 - Before/after token stat comparison not yet captured (requires interactive sessions)
+- **`0.6.1` is unpublished — npm still serves `0.6.0`, which pins `adm-zip@^0.5.16` and carries a runtime high (GHSA-xcpc-8h2w-3j85). Publishing `0.6.1` is the fix; see `.flowdeck/.crunchdeck/security-findings/VULN-AUDIT.md`**
+- `package-lock.json` is gitignored and untracked, so installs are not reproducible from a fresh clone and bounded `npm audit fix` is unsafe (no revert target)
+- `@ruco-ai/mcpster` is deprecated upstream ("Renamed to mcpster") while still a runtime dependency in four source files; `minimatch` is declared but imported nowhere
