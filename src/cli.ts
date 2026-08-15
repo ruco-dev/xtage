@@ -8,7 +8,7 @@ import { makeProgressFile, readProgress, removeProgress, type ProgressState } fr
 import { VERSION } from './version.js'
 import {
   lookupRepo, registerRepo, readFile, codeIndexPath, readFrontmatter,
-  repoDir, repoNameFromMemoryPath, projectInsightsPath,
+  repoNameFromMemoryPath, projectInsightsPath,
   stripFrontmatter, writeXtageFile,
 } from './store.js'
 import {
@@ -18,6 +18,7 @@ import {
 import { parseGitDiff, getGitDiff } from './hook.js'
 import { buildRepoInitPrompt, buildRepoUpdatePrompt, buildSessionStartPrompt, buildSessionEndPrompt } from './prompts.js'
 import { promptTelemetryOptIn } from './telemetry.js'
+import { xtageMcpConfig, exitUnlessIndexed } from './init-runner.js'
 
 const HELP = `xtage <command> [options]
 
@@ -106,36 +107,6 @@ function printInitDone(repoName: string, prog: ProgressState | null): void {
   console.log(`  xtage status   check index freshness\n`)
 }
 
-// The spawned `claude -p` subprocess is a fresh Claude Code session that does not
-// inherit our MCP registrations. Point it at this same binary running `serve`, so
-// the mcp__xtage__* tools in XTAGE_TOOLS actually exist for it to call.
-function xtageMcpConfig(): string {
-  const entrypoint = fileURLToPath(import.meta.url)
-  return JSON.stringify({
-    mcpServers: {
-      xtage: { command: process.execPath, args: [entrypoint, 'serve'] },
-    },
-  })
-}
-
-// Distinguish the failure modes behind a missing CODEINDEX.md. A bare "the agent
-// didn't save it" sends the user into a retry loop even when retrying cannot help.
-function exitUnlessIndexed(repoName: string): void {
-  if (existsSync(codeIndexPath(repoName))) return
-
-  console.error(`\n✗ Index was not written to ${codeIndexPath(repoName)}`)
-  if (existsSync(join(repoDir(repoName), 'REPO.md'))) {
-    console.error('REPO.md was written, so the xtage MCP tools are reachable — the agent')
-    console.error('stopped before saving CODEINDEX.md (often a timeout on a large repo).')
-    console.error('Re-run `xtage init`; it resumes from the same chunks.')
-  } else {
-    console.error('No files were written at all, which usually means the indexing agent')
-    console.error('could not reach the xtage MCP tools. Check that `claude` is on PATH and')
-    console.error('that `xtage serve` starts cleanly, then re-run `xtage init`.')
-  }
-  process.exit(1)
-}
-
 async function runClaude(prompt: string): Promise<ProgressState | null> {
   const progressFile = makeProgressFile()
   const env = { ...process.env, XTAGE_PROGRESS_FILE: progressFile }
@@ -145,7 +116,7 @@ async function runClaude(prompt: string): Promise<ProgressState | null> {
     'claude',
     [
       '-p', prompt,
-      '--mcp-config', xtageMcpConfig(),
+      '--mcp-config', xtageMcpConfig(import.meta.url),
       '--allowedTools', XTAGE_TOOLS.join(','),
     ],
     { stdio: ['inherit', 'pipe', 'pipe'], env }
