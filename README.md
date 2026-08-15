@@ -70,12 +70,14 @@ xtage init
 
 Indexes the current directory. Local filesystem by default — works offline, works for private repos, indexes your actual working state.
 
-To index a public GitHub repo instead:
+Claude fetches, chunks, and writes `REPO.md` and `CODEINDEX.md` to `~/xtage/{repo-name}/`. A spinner shows live progress.
+
+**This one command is the whole setup.** Once indexing succeeds, `xtage init` automatically installs the stagehand hooks (below) into the current project too — gate included — so a single `xtage init` in a fresh repo leaves you fully wired: indexed *and* enforced, no separate `xtage install` step to remember. Auto-install is skipped if `.claude/settings.local.json` already has hooks, so re-running `xtage init` to refresh an index never silently flips an existing `--no-gate` choice back on.
+
+To index a public GitHub repo instead (for lookup/reference — this does **not** auto-install, since the current directory isn't necessarily that repo):
 ```bash
 xtage init https://github.com/owner/repo
 ```
-
-Claude fetches, chunks, and writes `REPO.md` and `CODEINDEX.md` to `~/xtage/{repo-name}/`. A spinner shows live progress.
 
 ### 2. Install hooks (stagehand)
 
@@ -83,7 +85,7 @@ Claude fetches, chunks, and writes `REPO.md` and `CODEINDEX.md` to `~/xtage/{rep
 xtage install
 ```
 
-Wires four Claude Code hooks into `.claude/settings.local.json` (per-machine, not committed):
+Run this on its own only if you skipped auto-install (e.g. you indexed via a GitHub URL, or ran `xtage uninstall` and want hooks back). Wires four Claude Code hooks into `.claude/settings.local.json` (per-machine, not committed):
 
 | Hook | Event | Behaviour |
 |------|-------|-----------|

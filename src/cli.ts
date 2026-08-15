@@ -12,13 +12,12 @@ import {
   stripFrontmatter, writeXtageFile,
 } from './store.js'
 import {
-  emitHookScripts, mergeHooksIntoSettings, removeHooksFromSettings,
-  buildContextDigest, installGitHook, removeGitHook, writeState,
+  removeHooksFromSettings, buildContextDigest, removeGitHook, writeState,
 } from './stagehand.js'
 import { parseGitDiff, getGitDiff } from './hook.js'
 import { buildRepoInitPrompt, buildRepoUpdatePrompt, buildSessionStartPrompt, buildSessionEndPrompt } from './prompts.js'
 import { promptTelemetryOptIn } from './telemetry.js'
-import { xtageMcpConfig, exitUnlessIndexed } from './init-runner.js'
+import { xtageMcpConfig, exitUnlessIndexed, runInstall } from './init-runner.js'
 
 const HELP = `xtage <command> [options]
 
@@ -220,6 +219,14 @@ if (!cmd || cmd === 'serve') {
     const prog = await runClaude(buildRepoInitPrompt({ local_path: localPath, repo_name: repoName }))
     exitUnlessIndexed(repoName)
     printInitDone(repoName, prog)
+
+    // Auto-install so `xtage init` alone is a complete, working setup — a
+    // real user shouldn't need to separately remember `xtage install`.
+    // Skip only if hooks already exist (don't silently flip an explicit
+    // --no-gate choice back on during a re-index).
+    if (!existsSync(join(localPath, '.claude', 'settings.local.json'))) {
+      runInstall(repoName, localPath, fileURLToPath(import.meta.url), { noGate: false })
+    }
   }
 
 } else if (cmd === 'update') {
@@ -260,26 +267,7 @@ if (!cmd || cmd === 'serve') {
     process.exit(1)
   }
 
-  if (!readFile(codeIndexPath(repoName))) {
-    console.warn(`[xtage] Warning: no CODEINDEX.md found for "${repoName}". Run \`xtage init\` to index the repo. Hooks will be installed but the gate will fail-open until an index exists.`)
-  }
-
-  const cliPath = fileURLToPath(import.meta.url)
-  const hookPaths = emitHookScripts(repoName, projectDir)
-
-  const claudeDir = join(projectDir, '.claude')
-  mkdirSync(claudeDir, { recursive: true })
-  const settingsPath = join(claudeDir, 'settings.local.json')
-  mergeHooksIntoSettings(settingsPath, repoName, hookPaths, cliPath, !noGate)
-  writeState(repoName, true)
-
-  const gitInstalled = installGitHook(projectDir)
-  console.log(`[xtage] Installed hooks for "${repoName}" in ${settingsPath}`)
-  if (!noGate) console.log(`[xtage]   gate: Read|Grep|Glob → mcp__xtage__read_file_chunk`)
-  console.log(`[xtage]   flag: read_file_chunk|read_codeindex → consulted.json`)
-  console.log(`[xtage]   dirty: Edit|Write → dirty.json`)
-  console.log(`[xtage]   context: SessionStart digest injection`)
-  if (gitInstalled) console.log(`[xtage]   git post-commit hook → xtage update`)
+  runInstall(repoName, projectDir, fileURLToPath(import.meta.url), { noGate })
 
 } else if (cmd === 'uninstall') {
   const projectDir = process.cwd()
