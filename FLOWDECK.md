@@ -22,6 +22,8 @@ xtage gives Claude persistent, semantic knowledge of a codebase — across every
 - README install line, sync-memory, serve documented; `.gitignore` self-contradiction resolved
 - README "Upgrading from `@ruco-ai/xtage`" migration section added — documents `npm uninstall -g @ruco-ai/xtage && npm install -g @ruco-dev/xtage` to avoid EEXIST on global upgrade
 - `xtage init` (local-path branch) now calls `registerRepo` before the agent runs, and both init branches verify `CODEINDEX.md` exists after the agent exits — prints `✗ Index was not written` + exits 1 on failure instead of falsely reporting `✓ Indexed`
+- Root cause of that missing-index failure found and fixed: the `claude -p` subprocess `init` spawns was allow-listed for `mcp__xtage__*` tools but never had the xtage MCP server registered with it (subprocesses don't inherit MCP registrations) — every `write_codeindex` call had nowhere to land. Fixed by passing `--mcp-config` pointing the subprocess at this binary's own `serve`; `exitUnlessIndexed()` now also distinguishes "no MCP tools reachable" (no files written) from "agent stopped partway" (REPO.md exists, CODEINDEX.md doesn't) so the error tells you which is true
+- `last_indexed` frontmatter moved from prompt-build time (stale by the full run duration on long indexes) to a stamp applied inside `write_codeindex` itself, covering both `init` and `update`
 
 ## Known gaps
 
