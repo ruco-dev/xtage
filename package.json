@@ -6,12 +6,23 @@
   "license": "MIT",
   "author": "ruco-ai",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/server.js",
   "bin": {
     "xtage": "dist/cli.js"
   },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
