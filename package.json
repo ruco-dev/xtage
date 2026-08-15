@@ -29,7 +29,7 @@
   },
   "scripts": {
     "prebuild": "node scripts/gen-version.mjs",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/cli.js",
     "prepack": "npm run build",
     "prepublishOnly": "npm run build",
     "dev": "tsc --watch",
