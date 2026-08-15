@@ -1,0 +1,18 @@
+TODO.md
+.gitignore
+.navg8
+.mdforge
+.todofly/
+.todofly/config.json
+.todofly/.todoflyignore
+.venv
+#package-lock.json
+node_modules/
+dist/
+PRODUCT-*.md
+README.original.md
+.DS_Store
+.claude
+
+# Flowdeck live deck (local only, not tracked)
+.flowdeck/
