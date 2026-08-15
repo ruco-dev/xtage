@@ -20,6 +20,7 @@ xtage gives Claude persistent, semantic knowledge of a codebase — across every
 - Migrated from deprecated `@ruco-ai/mcpster` to unscoped `mcpster`; removed unused `minimatch`
 - `repository` and `bugs` fields added to `package.json`; CHANGELOG covers full history (0.3.x → 0.6.1)
 - README install line, sync-memory, serve documented; `.gitignore` self-contradiction resolved
+- README "Upgrading from `@ruco-ai/xtage`" migration section added — documents `npm uninstall -g @ruco-ai/xtage && npm install -g @ruco-dev/xtage` to avoid EEXIST on global upgrade
 
 ## Known gaps
 
