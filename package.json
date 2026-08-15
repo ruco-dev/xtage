@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@anthropic-ai/tokenizer": "^0.0.4",
+    "@ruco-dev/xtage": "^0.6.1",
     "adm-zip": "^0.6.0",
     "ignore": "^6.0.2",
     "mcpster": "^0.3.2",

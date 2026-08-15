@@ -27,6 +27,5 @@ xtage gives Claude persistent, semantic knowledge of a codebase — across every
 - git post-commit hook spawns a Claude session on every commit (including in this repo) — needs a guard when no index exists
 - Before/after token stat comparison not yet captured (requires interactive sessions)
 - **`@ruco-ai/xtage` deprecation message is still `*` for versions 0.5.0+** — `npm deprecate` ran but hit OTP (2FA) after updating 0.1.0–0.4.0. Re-run with OTP: `npm deprecate @ruco-ai/xtage@"*" "Renamed to @ruco-dev/xtage — install with: npx -y @ruco-dev/xtage"`
-- Private-content sweep was not re-run before `git push` (new commits are docs/code/deck only; no known secrets)
 
-> Full evidence: `.flowdeck/.crunchdeck/prepare-to-publish/AUDIT.md` (2026-08-15 run — all blockers/warnings resolved except H7 OTP).
+> Full evidence: `.flowdeck/_meld/2026-08-15-prepare-to-publish/AUDIT.md` (2026-08-15 play — all 5 blockers and 9 warnings resolved; H7 OTP deprecation pending human action).
