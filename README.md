@@ -51,6 +51,15 @@ For global installation across all projects, edit `~/.claude/settings.json`:
 }
 ```
 
+### Upgrading from `@ruco-ai/xtage`
+
+If you had the old package installed globally, remove it first — npm will refuse to overwrite the existing `xtage` binary with EEXIST:
+
+```bash
+npm uninstall -g @ruco-ai/xtage
+npm install -g @ruco-dev/xtage
+```
+
 ## Usage
 
 ### 1. Index a repo
