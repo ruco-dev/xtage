@@ -4,7 +4,7 @@ All notable changes to xtage are documented here. This project adheres to [Seman
 
 ## 0.6.1
 
-- **Security:** upgraded `adm-zip` from 0.5.16 to 0.6.0 to fix CVE-2024-27086 (crafted ZIP files trigger 4GB memory allocation). This affects GitHub repository downloads in `fetchRepoData()`.
+- **Security:** upgraded `adm-zip` from 0.5.16 to 0.6.0 to fix GHSA-xcpc-8h2w-3j85 (crafted ZIP files trigger 4GB memory allocation, CWE-400/789). This affects GitHub repository downloads in `fetchRepoData()`.
 
 ## 0.6.0
 
