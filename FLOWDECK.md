@@ -21,6 +21,7 @@ xtage gives Claude persistent, semantic knowledge of a codebase — across every
 - `repository` and `bugs` fields added to `package.json`; CHANGELOG covers full history (0.3.x → 0.6.1)
 - README install line, sync-memory, serve documented; `.gitignore` self-contradiction resolved
 - README "Upgrading from `@ruco-ai/xtage`" migration section added — documents `npm uninstall -g @ruco-ai/xtage && npm install -g @ruco-dev/xtage` to avoid EEXIST on global upgrade
+- `xtage init` (local-path branch) now calls `registerRepo` before the agent runs, and both init branches verify `CODEINDEX.md` exists after the agent exits — prints `✗ Index was not written` + exits 1 on failure instead of falsely reporting `✓ Indexed`
 
 ## Known gaps
 
