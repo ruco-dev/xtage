@@ -66,7 +66,10 @@ repo_url: ${repoRef}
 last_indexed: ${now}
 tool_version: 0.1.0
 ---
-\`\`\``
+\`\`\`
+
+Include the \`last_indexed\` line exactly as shown — it is a placeholder that
+write_codeindex overwrites with the actual write time.`
 }
 
 export function buildRepoUpdatePrompt(args: { repo_name?: string; changed_files?: string; changed_symbols?: string }): string {
@@ -96,7 +99,7 @@ For each changed file:
 Rules:
 - Only touch sections for changed files — preserve all other sections character-for-character
 - Update \`Last updated\` timestamp only on sections you modify
-- After all sections are updated, update the \`last_indexed\` frontmatter field to: ${new Date().toISOString()}
+- Leave the \`last_indexed\` frontmatter field as-is; write_codeindex stamps it with the real write time
 - Call write_codeindex with the complete updated CODEINDEX.md content`
 }
 

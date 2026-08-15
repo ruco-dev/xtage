@@ -106,6 +106,36 @@ function printInitDone(repoName: string, prog: ProgressState | null): void {
   console.log(`  xtage status   check index freshness\n`)
 }
 
+// The spawned `claude -p` subprocess is a fresh Claude Code session that does not
+// inherit our MCP registrations. Point it at this same binary running `serve`, so
+// the mcp__xtage__* tools in XTAGE_TOOLS actually exist for it to call.
+function xtageMcpConfig(): string {
+  const entrypoint = fileURLToPath(import.meta.url)
+  return JSON.stringify({
+    mcpServers: {
+      xtage: { command: process.execPath, args: [entrypoint, 'serve'] },
+    },
+  })
+}
+
+// Distinguish the failure modes behind a missing CODEINDEX.md. A bare "the agent
+// didn't save it" sends the user into a retry loop even when retrying cannot help.
+function exitUnlessIndexed(repoName: string): void {
+  if (existsSync(codeIndexPath(repoName))) return
+
+  console.error(`\n✗ Index was not written to ${codeIndexPath(repoName)}`)
+  if (existsSync(join(repoDir(repoName), 'REPO.md'))) {
+    console.error('REPO.md was written, so the xtage MCP tools are reachable — the agent')
+    console.error('stopped before saving CODEINDEX.md (often a timeout on a large repo).')
+    console.error('Re-run `xtage init`; it resumes from the same chunks.')
+  } else {
+    console.error('No files were written at all, which usually means the indexing agent')
+    console.error('could not reach the xtage MCP tools. Check that `claude` is on PATH and')
+    console.error('that `xtage serve` starts cleanly, then re-run `xtage init`.')
+  }
+  process.exit(1)
+}
+
 async function runClaude(prompt: string): Promise<ProgressState | null> {
   const progressFile = makeProgressFile()
   const env = { ...process.env, XTAGE_PROGRESS_FILE: progressFile }
@@ -113,7 +143,11 @@ async function runClaude(prompt: string): Promise<ProgressState | null> {
 
   const child = spawn(
     'claude',
-    ['-p', prompt, '--allowedTools', XTAGE_TOOLS.join(',')],
+    [
+      '-p', prompt,
+      '--mcp-config', xtageMcpConfig(),
+      '--allowedTools', XTAGE_TOOLS.join(','),
+    ],
     { stdio: ['inherit', 'pipe', 'pipe'], env }
   )
 
@@ -204,11 +238,7 @@ if (!cmd || cmd === 'serve') {
     const repoName = repoNameFromUrl(explicitUrl)
     console.log(`Fetching remote: ${explicitUrl}`)
     const prog = await runClaude(buildRepoInitPrompt({ repo_url: explicitUrl, repo_name: repoName }))
-    if (!existsSync(codeIndexPath(repoName))) {
-      console.error(`\n✗ Index was not written to ${codeIndexPath(repoName)}`)
-      console.error('The indexing agent finished but did not save a CODEINDEX.md. Try running `xtage init` again.')
-      process.exit(1)
-    }
+    exitUnlessIndexed(repoName)
     printInitDone(repoName, prog)
   } else {
     const localPath = process.cwd()
@@ -217,11 +247,7 @@ if (!cmd || cmd === 'serve') {
     registerRepo(localPath, repoName)
     console.log(`Indexing: ${localPath}`)
     const prog = await runClaude(buildRepoInitPrompt({ local_path: localPath, repo_name: repoName }))
-    if (!existsSync(codeIndexPath(repoName))) {
-      console.error(`\n✗ Index was not written to ${codeIndexPath(repoName)}`)
-      console.error('The indexing agent finished but did not save a CODEINDEX.md. Try running `xtage init` again.')
-      process.exit(1)
-    }
+    exitUnlessIndexed(repoName)
     printInitDone(repoName, prog)
   }
 

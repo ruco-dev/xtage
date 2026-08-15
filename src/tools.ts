@@ -15,7 +15,7 @@ import {
   writeXtageFile, readFile,
   repoMdPath, codeIndexPath, projectInsightsPath, generalInsightsPath, fileChunkPath,
   registerRepo, lookupRepo, listRegistry,
-  readFrontmatter, stripFrontmatter,
+  readFrontmatter, stripFrontmatter, updateFrontmatter,
   repoNameFromMemoryPath,
 } from './store.js'
 
@@ -146,7 +146,12 @@ export function registerTools(server: McpsterServer): void {
       repo_name: z.string().describe('Repository name'),
     }),
     handler: async ({ content, repo_name }) => {
-      writeXtageFile(codeIndexPath(repo_name), content)
+      // The agent's last_indexed comes from the prompt, which is built before
+      // indexing starts — on a long run that timestamp is stale by the whole
+      // duration, and check_for_updates compares it against commit times to
+      // judge staleness. Stamp the actual write time here instead.
+      const stamped = updateFrontmatter(content, 'last_indexed', new Date().toISOString())
+      writeXtageFile(codeIndexPath(repo_name), stamped)
       writeProgress({ phase: 'writing', label: 'CODEINDEX.md' })
       return { written: codeIndexPath(repo_name) }
     },
