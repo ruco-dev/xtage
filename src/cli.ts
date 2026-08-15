@@ -204,13 +204,24 @@ if (!cmd || cmd === 'serve') {
     const repoName = repoNameFromUrl(explicitUrl)
     console.log(`Fetching remote: ${explicitUrl}`)
     const prog = await runClaude(buildRepoInitPrompt({ repo_url: explicitUrl, repo_name: repoName }))
+    if (!existsSync(codeIndexPath(repoName))) {
+      console.error(`\n✗ Index was not written to ${codeIndexPath(repoName)}`)
+      console.error('The indexing agent finished but did not save a CODEINDEX.md. Try running `xtage init` again.')
+      process.exit(1)
+    }
     printInitDone(repoName, prog)
   } else {
     const localPath = process.cwd()
     const remote = gitRemote()
     const repoName = remote ? repoNameFromUrl(remote) : (localPath.split('/').filter(Boolean).pop() ?? 'repo')
+    registerRepo(localPath, repoName)
     console.log(`Indexing: ${localPath}`)
     const prog = await runClaude(buildRepoInitPrompt({ local_path: localPath, repo_name: repoName }))
+    if (!existsSync(codeIndexPath(repoName))) {
+      console.error(`\n✗ Index was not written to ${codeIndexPath(repoName)}`)
+      console.error('The indexing agent finished but did not save a CODEINDEX.md. Try running `xtage init` again.')
+      process.exit(1)
+    }
     printInitDone(repoName, prog)
   }
 
