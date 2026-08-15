@@ -2,7 +2,7 @@
  * MCP prompt definitions.
  * Per Anthropic long-context guidance: instructions go LAST (after content).
  */
-import type { McpsterServer } from "@ruco-ai/mcpster"
+import type { McpsterServer } from "mcpster"
 
 export function buildRepoInitPrompt(args: { repo_url?: string; local_path?: string; repo_name?: string }): string {
   const repoUrl = args.repo_url

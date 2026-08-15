@@ -2,7 +2,7 @@
  * All MCP tool definitions for xtage.
  */
 import { z } from 'zod'
-import type { McpsterServer } from "@ruco-ai/mcpster"
+import type { McpsterServer } from "mcpster"
 import { fetchRepoData, fetchSingleFile, checkForUpdates } from './github.js'
 import { fetchLocalRepoData } from './local.js'
 import { loadIgnoreRules, makeFilter, scanForSecrets } from './ignore.js'

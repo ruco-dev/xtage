@@ -2,7 +2,7 @@
  * MCP resource definitions — serve the four xtage files via xtage:// URIs.
  * The active repo_name is resolved from env XTAGE_REPO or the first indexed repo.
  */
-import type { McpsterServer } from "@ruco-ai/mcpster"
+import type { McpsterServer } from "mcpster"
 import {
   readFile,
   repoMdPath, codeIndexPath, projectInsightsPath, generalInsightsPath,

@@ -2,7 +2,7 @@
  * xtage MCP server entry point.
  * Invoked as an MCP server when no CLI subcommand is given.
  */
-import { createServer } from "@ruco-ai/mcpster"
+import { createServer } from "mcpster"
 import { registerTools } from './tools.js'
 import { registerResources } from './resources.js'
 import { registerPrompts } from './prompts.js'
