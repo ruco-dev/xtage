@@ -2,6 +2,10 @@
 
 All notable changes to xtage are documented here. This project adheres to [Semantic Versioning](https://semver.org/).
 
+## 0.6.1
+
+- **Security:** upgraded `adm-zip` from 0.5.16 to 0.6.0 to fix CVE-2024-27086 (crafted ZIP files trigger 4GB memory allocation). This affects GitHub repository downloads in `fetchRepoData()`.
+
 ## 0.6.0
 
 - **Moved to the `@ruco-dev` scope.** Published as `@ruco-dev/xtage`; install with `npx -y @ruco-dev/xtage` or `claude mcp add xtage npx -- -y @ruco-dev/xtage`. The scope now matches the project's own domain rather than one it doesn't control.
