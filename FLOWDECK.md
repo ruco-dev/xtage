@@ -28,8 +28,8 @@ xtage gives Claude persistent, semantic knowledge of a codebase — across every
 - No xtage index exists for the xtage repo itself yet — run `xtage init` to bootstrap; gate currently fails-open everywhere
 - git post-commit hook spawns a Claude session on every commit (including in this repo) — needs a guard when no index exists
 - Before/after token stat comparison not yet captured (requires interactive sessions)
-- **`0.6.2` not yet published** — self-dep removed, version bumped, CHANGELOG rewritten, 24 tests pass; awaiting `npm publish` + `git push origin master --follow-tags`. Post-publish: run `npm view @ruco-dev/xtage dependencies` to confirm no `@ruco-ai/mcpster`, no `minimatch`, no self-reference
+- **`0.6.2` not yet published** — self-dep removed, version bumped, CHANGELOG rewritten, 24 tests pass. **Credentials unblocked** (`npm whoami` → `alex-ruco-pt`): run `npm publish` then `git push origin master --follow-tags`. Post-publish: run `npm view @ruco-dev/xtage dependencies` to confirm no `@ruco-ai/mcpster`, no `minimatch`, no self-reference
 
 > **Corrected 2026-08-16:** the previous "deprecation message is still `*` for versions 0.5.0+ / re-run with OTP" gap was a phantom — versions 0.5.0+ never existed on `@ruco-ai/xtage`, and all 7 that do carry the correct message.
 >
-> Full evidence: `.flowdeck/.crunchdeck/prepare-to-publish/AUDIT.md` (2026-08-16 play — NOT READY, 4 blockers / 8 warnings; all 5 blockers from the 2026-08-15 play verified closed). Prior runs: `.flowdeck/_meld/2026-08-15-prepare-to-publish/AUDIT.md`.
+> Full evidence: `.flowdeck/.crunchdeck/prepare-to-publish/AUDIT.md` (2026-08-16 run 2 — NOT READY, **2 blockers / 4 warnings**; credentials resolved, both remaining blockers unblocked — `npm publish` + `git push` are the only remaining steps). Prior runs: same file (run 1: 4B/8W), `.flowdeck/_meld/2026-08-15-prepare-to-publish/AUDIT.md` (runs 2026-07-28, 2026-08-15).
