@@ -1,6 +1,6 @@
 {
   "name": "@ruco-dev/xtage",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Local MCP server giving Claude persistent, semantic knowledge of a codebase",
   "homepage": "https://xtage.ruco.dev",
   "license": "MIT",
@@ -40,7 +40,6 @@
   },
   "dependencies": {
     "@anthropic-ai/tokenizer": "^0.0.4",
-    "@ruco-dev/xtage": "^0.6.1",
     "adm-zip": "^0.6.0",
     "ignore": "^6.0.2",
     "mcpster": "^0.3.2",

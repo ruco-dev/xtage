@@ -2,14 +2,26 @@
 
 All notable changes to xtage are documented here. This project adheres to [Semantic Versioning](https://semver.org/).
 
-## 0.6.1
+## 0.6.2
 
 - **Security:** upgraded `adm-zip` from 0.5.16 to 0.6.0 to fix GHSA-xcpc-8h2w-3j85 (crafted ZIP files trigger 4GB memory allocation, CWE-400/789). This affects GitHub repository downloads in `fetchRepoData()`.
 - **Migrated** runtime dependency from deprecated `@ruco-ai/mcpster` to unscoped `mcpster` (same API; upstream renamed the package).
 - **Removed** unused `minimatch` dependency.
+- **Removed** erroneous self-reference (`@ruco-dev/xtage` listed as its own runtime dependency).
 - **Fixed:** `src/version.ts` now generated from `package.json` via `prebuild` script — VERSION constant can no longer drift.
 - **Packaging:** `prepack` runs a full build so `npm pack` always ships a complete `dist/`.
 - **CI:** added `.github/workflows/ci.yml` (install → build → test → pack check on every push).
+- **`xtage init` auto-installs hooks** — one command is the whole setup; auto-install is skipped if hooks are already present.
+- **Fixed:** `xtage init` now registers the xtage MCP server for its own subprocess so `write_codeindex` calls succeed; `last_indexed` is now stamped at write time instead of prompt-build time.
+- **Fixed:** `xtage init` verifies the index was written before reporting success; exits 1 with a clear message if the index was not produced.
+- **Fixed:** `write_repo_md` / `write_codeindex` now pin `repo_name` from the directory name rather than inheriting a stale git remote.
+- **Fixed:** `dist/cli.js` exec bit restored after build.
+
+## 0.6.1
+
+- **Security:** upgraded `adm-zip` from 0.5.16 to 0.6.0 to fix GHSA-xcpc-8h2w-3j85 (crafted ZIP files trigger 4GB memory allocation, CWE-400/789). This affects GitHub repository downloads in `fetchRepoData()`.
+
+> **Note:** the `mcpster` migration, `minimatch` removal, `prepack`, CI, and all hook/init fixes listed above were committed *after* the `v0.6.1` tag and are therefore part of `0.6.2`. The 0.6.1 registry artifact only contains the `adm-zip` security upgrade.
 
 ## 0.6.0
 
