@@ -121,6 +121,19 @@ async function runClaude(prompt: string): Promise<ProgressState | null> {
     { stdio: ['inherit', 'pipe', 'pipe'], env }
   )
 
+  // Must drain these or an unread pipe can fill and make the child block on
+  // write() — a real deadlock risk on verbose runs, and until now it also
+  // meant any error the child printed vanished silently on failure. Buffer
+  // stderr so a non-zero exit can show the caller what actually went wrong.
+  const debug = !!process.env.XTAGE_DEBUG
+  let stderrBuf = ''
+  child.stdout?.on('data', (c: Buffer) => { if (debug) process.stderr.write(`[xtage debug stdout] ${c}`) })
+  child.stderr?.on('data', (chunk: Buffer) => {
+    stderrBuf += chunk.toString()
+    if (debug) process.stderr.write(`[xtage debug stderr] ${chunk}`)
+  })
+  if (debug) child.on('exit', (code, signal) => process.stderr.write(`[xtage debug] child exited: code=${code} signal=${signal}\n`))
+
   let frame = 0
   let lastProgress: ProgressState | null = null
 
@@ -154,7 +167,12 @@ async function runClaude(prompt: string): Promise<ProgressState | null> {
   const finalProgress = readProgress(progressFile) ?? lastProgress
   removeProgress(progressFile)
 
-  if (code !== 0) process.exit(code ?? 1)
+  if (code !== 0) {
+    if (stderrBuf.trim()) {
+      console.error(`\n[xtage] claude -p exited with code ${code}:\n${stderrBuf.trim()}`)
+    }
+    process.exit(code ?? 1)
+  }
   return finalProgress
 }
 
@@ -212,8 +230,20 @@ if (!cmd || cmd === 'serve') {
     printInitDone(repoName, prog)
   } else {
     const localPath = process.cwd()
+    // Prefer the actual directory name over the git remote. A subdirectory of a
+    // monorepo (no .git of its own) inherits the parent's remote — e.g. running
+    // `xtage init` in .../pills-incubator/beepr resolves the remote to
+    // "pills-incubator", which is not what the user meant to index. Only fall
+    // back to the remote-derived name when the cwd IS the repo root (git top
+    // level matches cwd), so a real top-level repo still keys off its remote.
     const remote = gitRemote()
-    const repoName = remote ? repoNameFromUrl(remote) : (localPath.split('/').filter(Boolean).pop() ?? 'repo')
+    const gitRoot = (() => {
+      try { return execSync('git rev-parse --show-toplevel', { encoding: 'utf8', stdio: 'pipe' }).trim() } catch { return null }
+    })()
+    const cwdIsRepoRoot = gitRoot === localPath
+    const repoName = (remote && cwdIsRepoRoot)
+      ? repoNameFromUrl(remote)
+      : (localPath.split('/').filter(Boolean).pop() ?? 'repo')
     registerRepo(localPath, repoName)
     console.log(`Indexing: ${localPath}`)
     const prog = await runClaude(buildRepoInitPrompt({ local_path: localPath, repo_name: repoName }))

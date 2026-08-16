@@ -24,7 +24,9 @@ ${fetchInstruction}
 
 ## Step 2 — Generate REPO.md (from chunk 1 files only)
 
-Using the files from chunk 1, call write_repo_md with the following structure:
+Using the files from chunk 1, call write_repo_md with repo_name="${repoName}" (use this
+exact string as the repo_name argument — do not infer a different name from the
+directory, package.json, or any other source) and the following structure:
 - What This Repo Does: one clear paragraph (problem, users, primary flow)
 - Architecture Overview: key components and relationships, ASCII diagram if helpful
 - Directory Structure: actual structure from the files
@@ -58,7 +60,10 @@ Rules:
 
 ## Step 4 — Write CODEINDEX.md
 
-Call write_codeindex with the full assembled CODEINDEX.md including frontmatter:
+Call write_codeindex with repo_name="${repoName}" (same exact string as Step 2 — the
+caller looks for the index under this name, so a different value here means the
+index is written somewhere nobody will find it) and the full assembled
+CODEINDEX.md including frontmatter:
 
 \`\`\`
 ---
@@ -100,7 +105,9 @@ Rules:
 - Only touch sections for changed files — preserve all other sections character-for-character
 - Update \`Last updated\` timestamp only on sections you modify
 - Leave the \`last_indexed\` frontmatter field as-is; write_codeindex stamps it with the real write time
-- Call write_codeindex with the complete updated CODEINDEX.md content`
+- Call write_codeindex with repo_name="${repoName}" (this exact string, not an inferred
+  name — the caller looks up the index under this name) and the complete updated
+  CODEINDEX.md content`
 }
 
 export function buildSessionStartPrompt(args: { repo_name?: string }): string {
